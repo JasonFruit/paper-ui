@@ -1,5 +1,12 @@
 import os
-from pervasive import PervasiveDisplay
+
+try:
+    from pervasive import PervasiveDisplay
+except ImportError:
+    # this will only allow DebugScreenDrawer
+    def PervasiveDisplay():
+        return None
+    
 from key_events import ExclusiveKeyReader
 from PIL import Image, ImageFont, ImageDraw
 from epd_func import convert
@@ -41,12 +48,8 @@ class DebugScreenDrawer(ScreenDrawer):
     def __init__(self, directory, width=800, height=480):
         ScreenDrawer.__init__(self, width, height)
         self.directory = directory
-        self.screen_num = 0
     def send(self):
-        fn = str(self.screen_num).zfill(5) + ".png"
-        self.screenshot(os.path.join(self.directory,
-                                     fn))
-        self.screen_num += 1
+        self.screenshot("/tmp/gui_image.png")
     def clear(self):
         self.new_screen()
         self.send()

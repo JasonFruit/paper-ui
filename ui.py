@@ -201,8 +201,8 @@ class Entry(Widget):
     @text.setter
     def text(self, new_text):
         self._text = new_text
-        if len(self.text) + 1 < self.cursor_pos:
-            self.cursor_pos = len(self.text) + 1
+        if len(self.text) < self.cursor_pos:
+            self.cursor_pos = len(self.text)
         self.fire("text-changed", self._text)
     def handle_key(self, char, code):
         if char:
@@ -537,18 +537,21 @@ class Form(Container):
     def __init__(self, *contents, **kwargs):
         Container.__init__(self, contents)
         self.key_translator = KeyTranslator()
-        self.width = 800
-        self.height = 480
 
+        try:
+            self.debug = kwargs["debug"]
+        except KeyError:
+            self.debug = False
+        
         try:
             self.width = kwargs["width"]
         except KeyError:
-            pass
+            self.width = 800
         
         try:
             self.height = kwargs["height"]
         except KeyError:
-            pass
+            self.height = 480
 
         self.do_layout()
 
@@ -612,11 +615,15 @@ class Form(Container):
                 
             next_y += child.height
 
+    def _time_to_redraw(self):
+        if self.debug:
+            return True
+        else:
+            return ((datetime.now() - self._dirty_time).total_seconds() > 0.75 or
+                    (datetime.now() - self._last_draw).total_seconds() > 5.75)
     def _draw(self, drawer):
         while not self.finished:
-            if (self.dirty and
-                ((datetime.now() - self._dirty_time).total_seconds() > 0.75 or
-                 (datetime.now() - self._last_draw).total_seconds() > 5.75)):
+            if self.dirty and self._time_to_redraw():
                 self.dirty = False
                 self._last_draw = datetime.now()
                 drawer.new_screen()

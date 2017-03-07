@@ -22,7 +22,8 @@ entry_form = Form(
     Row(contents=[Button(text="Save",
                          name="save-button"),
                   Button(text="Done",
-                         name="done-button")]))
+                         name="done-button")]),
+    debug=False)
 
 summary_form = Form(
     Label(text="Entries"),
@@ -30,7 +31,8 @@ summary_form = Form(
              name="display-area",
              rows=18),
     Button(text="Done",
-           name="done-button"))
+           name="done-button"),
+    debug=False)
 
 conn = connect("test.db")
 cur = conn.cursor()
@@ -74,7 +76,7 @@ tmpl = """%s %s
 
 with ExclusiveKeyReader("/dev/input/event0") as keyboard:
     from core import *
-    drawer = ScreenDrawer()
+    drawer = DebugScreenDrawer("screens")
     entry_form.run(keyboard, drawer)
     
     cur.execute("select * from data")
