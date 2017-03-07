@@ -22,7 +22,7 @@ entry_form = Form(
     Row(contents=[Button(text="Save",
                          name="save-button"),
                   Button(text="Done",
-                         name="close-form-button")]))
+                         name="done-button")]))
 
 summary_form = Form(
     Label(text="Entries"),
@@ -64,9 +64,8 @@ def close_form(f, c, data):
     f.finish()
     
 entry_form.control("save-button").connect("clicked", save_data)
-entry_form.control("close-form-button").connect("clicked", close_form)
+entry_form.control("done-button").connect("clicked", close_form)
 summary_form.control("done-button").connect("clicked", close_form)
-summary_form.control("done-button").connect("clicked", lambda f, c, data: f.drawer.screenshot("summary.png"))
 summary_form.control("done-button").connect("clicked", lambda f, c, data: f.drawer.clear())
 
 tmpl = """%s %s
@@ -74,6 +73,7 @@ tmpl = """%s %s
 %s"""
 
 with ExclusiveKeyReader("/dev/input/event0") as keyboard:
+    from core import *
     drawer = ScreenDrawer()
     entry_form.run(keyboard, drawer)
     

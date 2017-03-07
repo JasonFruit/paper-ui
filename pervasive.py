@@ -41,7 +41,7 @@ class PervasiveDisplay(object):
             pass
     
     def send_command(self, cmd, data=list()):
-        self.wait_for_ready()
+        # self.wait_for_ready()
         self.spi.xfer2(commands[cmd] + data)
         self.wait_for_ready()
 

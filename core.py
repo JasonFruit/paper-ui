@@ -1,3 +1,4 @@
+import os
 from pervasive import PervasiveDisplay
 from key_events import ExclusiveKeyReader
 from PIL import Image, ImageFont, ImageDraw
@@ -36,28 +37,16 @@ class ScreenDrawer(object):
         self.display.send_image(self.epd())
         self.display.update_display()
 
-class Application(ExclusiveKeyReader):
-    def __init__(self, keyboard, handle_key, display_manager):
-        ExclusiveKeyReader.__init__(self, keyboard)
-        self.handle_key = handle_key
-        self.display_manager = display_manager
-        self.display = PervasiveDisplay()
-        self.display.wait_for_ready()
-        self.display_manager(self.display)
-    def run(self):
-        self.event_loop(self.handle_key)
-    
-        
-if __name__ == "__main__":
-    
-    def handle_key(keycode, keystate):
-        if keycode != "KEY_F1":
-            print(keycode, keystate)
-        else:
-            exit()
-            
-    with Application("/dev/input/event0",
-                     handle_key,
-                     print) as app:
-        app.run()
-        
+class DebugScreenDrawer(ScreenDrawer):
+    def __init__(self, directory, width=800, height=480):
+        ScreenDrawer.__init__(self, width, height)
+        self.directory = directory
+        self.screen_num = 0
+    def send(self):
+        fn = str(self.screen_num).zfill(5) + ".png"
+        self.screenshot(os.path.join(self.directory,
+                                     fn))
+        self.screen_num += 1
+    def clear(self):
+        self.new_screen()
+        self.send()

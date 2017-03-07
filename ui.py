@@ -615,7 +615,7 @@ class Form(Container):
     def _draw(self, drawer):
         while not self.finished:
             if (self.dirty and
-                ((datetime.now() - self._dirty_time).total_seconds() > 0.5 or
+                ((datetime.now() - self._dirty_time).total_seconds() > 0.75 or
                  (datetime.now() - self._last_draw).total_seconds() > 5.75)):
                 self.dirty = False
                 self._last_draw = datetime.now()
@@ -634,12 +634,6 @@ class Form(Container):
         display_thread.daemon = True
         display_thread.start()
 
-    # def control(self, name):
-    #     for ctl in self.tab_order:
-    #         if ctl.name == name:
-    #             return ctl
-    #     return None
-
     def handle_key(self, keycode, keystate):
         char, code = self.key_translator.translate(keycode, keystate)
         
@@ -657,4 +651,3 @@ class Form(Container):
         self.drawer = screen
         self.draw(screen)
         keyboard.event_loop(self.handle_key)
-        
