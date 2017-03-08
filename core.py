@@ -3,10 +3,11 @@ import os
 try:
     from pervasive import PervasiveDisplay
 except ImportError:
-    # this will only allow DebugScreenDrawer
+    # this will allow derived classes that do not depend on
+    # PervasiveDisplay
     def PervasiveDisplay():
         return None
-    
+
 from key_events import ExclusiveKeyReader
 from PIL import Image, ImageFont, ImageDraw
 from epd_func import convert
@@ -14,13 +15,12 @@ from epd_func import convert
 class ScreenDrawer(object):
     def __init__(self, width=800, height=480):
         self.screen = None
-        self.width = width
-        self.height = height
+        self.size = (width, height)
         self.font = ImageFont.truetype("fonts/RobotoMono-Bold.ttf", size=15)
         self.display = PervasiveDisplay()
     def new_screen(self):
         self.screen = Image.new("1",
-                                (self.width, self.height),
+                                self.size,
                                 1)
         self._drawer = ImageDraw.Draw(self.screen)
     def text(self, x, y, text):
@@ -43,13 +43,3 @@ class ScreenDrawer(object):
         self.display.reset_data_pointer()
         self.display.send_image(self.epd())
         self.display.update_display()
-
-class DebugScreenDrawer(ScreenDrawer):
-    def __init__(self, directory, width=800, height=480):
-        ScreenDrawer.__init__(self, width, height)
-        self.directory = directory
-    def send(self):
-        self.screenshot("/tmp/gui_image.png")
-    def clear(self):
-        self.new_screen()
-        self.send()

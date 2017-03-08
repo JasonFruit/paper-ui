@@ -1,6 +1,16 @@
 from sqlite3 import connect
 from ui import *
 
+from core import *
+from fb import FrameBufferDrawer
+
+debug = True #False
+
+if debug:
+    drawer =  FrameBufferDrawer()
+else:
+    drawer = ScreenDrawer()
+
 entry_form = Form(
     Row(contents=[Label(text="First name"),
                   Entry(name="first-name")]),
@@ -23,7 +33,9 @@ entry_form = Form(
                          name="save-button"),
                   Button(text="Done",
                          name="done-button")]),
-    debug=False)
+    debug=debug,
+    width=drawer.size[0],
+    height=drawer.size[1])
 
 summary_form = Form(
     Label(text="Entries"),
@@ -32,7 +44,9 @@ summary_form = Form(
              rows=18),
     Button(text="Done",
            name="done-button"),
-    debug=False)
+    debug=debug,
+    width=drawer.size[0],
+    height=drawer.size[1])
 
 conn = connect("test.db")
 cur = conn.cursor()
@@ -75,8 +89,7 @@ tmpl = """%s %s
 %s"""
 
 with ExclusiveKeyReader("/dev/input/event0") as keyboard:
-    from core import *
-    drawer = DebugScreenDrawer("screens")
+
     entry_form.run(keyboard, drawer)
     
     cur.execute("select * from data")
