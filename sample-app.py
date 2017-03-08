@@ -88,7 +88,7 @@ tmpl = """%s %s
 %s: %s
 %s"""
 
-with ExclusiveKeyReader("/dev/input/event0") as keyboard:
+with ExclusiveKeyReader("/dev/input/event4") as keyboard:
 
     entry_form.run(keyboard, drawer)
     
