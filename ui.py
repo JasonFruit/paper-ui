@@ -287,7 +287,7 @@ class Chooser(Widget):
 
             for i in range(len(self.items)):
                 text_y = self.y + chars_to_pixels(i - self.selected, directions.y) + line_width
-                if 15 < text_y < 480 - 15 - char_height:
+                if 15 < text_y < self.owner.height - 15 - char_height:
                     drawer.text(self.x + line_width, text_y, self.items[i])
 
     def draw(self, drawer):
@@ -325,12 +325,12 @@ class Chooser(Widget):
                     self.selected += 1
                     self.redraw()
             elif code in ["KEY_PAGEDOWN", "C-KEY_V"]:
-                self.selected += pixels_to_chars(480 - 30, directions.y) - 2
+                self.selected += pixels_to_chars(self.owner.height - 30, directions.y) - 2
                 if self.selected >= len(self.items):
                     self.selected = len(self.items) - 1
                 self.redraw()
             elif code in ["KEY_PAGEUP", "A-KEY_V"]:
-                self.selected -= pixels_to_chars(480 - 30, directions.y) + 2
+                self.selected -= pixels_to_chars(self.owner.height - 30, directions.y) + 2
                 if self.selected < 0:
                     self.selected = 0
                 self.redraw()
@@ -654,6 +654,7 @@ class Form(Container):
             self.focused_control.handle_key(char, code)
 
     def run(self, keyboard, screen):
+        self.finished = False
         self.keyboard = keyboard
         self.drawer = screen
         self.draw(screen)
